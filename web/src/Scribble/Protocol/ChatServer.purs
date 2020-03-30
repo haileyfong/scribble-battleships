@@ -1,13 +1,9 @@
 module Scribble.Protocol.ChatServer where
 
 import Scribble.FSM
-import Prim.RowList (Cons, Nil)
-import Data.Void (Void)
-import Data.Tuple (Tuple)
 
 import Data.Argonaut.Decode (class DecodeJson)
 import Data.Argonaut.Encode (class EncodeJson)
-import Data.Argonaut.Core (Json)
 import Data.Generic.Rep (class Generic)
 import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
 import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
@@ -72,7 +68,7 @@ instance sendS11 :: Send Server S11Connected S13 ConnectUser
 instance sendS13Send :: Send Server S13Send S14 Message
 instance sendS13Receive :: Send Server S13Receive S15 RcvMessage
 instance sendS13Quit :: Send Server S13Quit S16 Quit
-instance selectS13 :: Select Server S13 (Cons "send" S13Send (Cons "receive" S13Receive (Cons "quit" S13Quit Nil)))
+instance selectS13 :: Select Server S13 ("send" :: S13Send ,"receive" :: S13Receive ,"quit" :: S13Quit)
 instance receiveS14 :: Receive Server S14 S13 Messages
 instance receiveS15 :: Receive Server S15 S13 Messages
 instance disconnectS16 :: Disconnect Client Server S16 S17
@@ -97,7 +93,7 @@ instance acceptS26 :: Accept Server Client S26 S28
 instance receiveS28Send :: Receive Client S28Send S29 Message
 instance receiveS28Receive :: Receive Client S28Receive S30 RcvMessage
 instance receiveS28Quit :: Receive Client S28Quit S31 Quit
-instance branchS28 :: Branch Server Client S28 (Cons "send" S28Send (Cons "receive" S28Receive (Cons "connect" S26 (Cons "quit" S28Quit Nil))))
+instance branchS28 :: Branch Server Client S28 ("send" :: S28Send ,"receive" :: S28Receive ,"connect" :: S26 ,"quit" :: S28Quit)
 instance sendS29 :: Send Client S29 S28 Message
 instance sendS30 :: Send Client S30 S28 Messages
 instance disconnectS31 :: Disconnect Server Client S31 S27
