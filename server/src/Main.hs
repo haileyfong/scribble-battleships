@@ -7,9 +7,6 @@ import           Prelude
 import           Control.Monad ((>=>))
 import qualified Network.WebSockets as WS
 import           Control.Concurrent (forkIO)
-
-import           Server.Math as M
-import           Server.BattleShips as BS
 import           Server.ChatServer as CS
 
 main :: IO ()
