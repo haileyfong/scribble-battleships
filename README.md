@@ -1,4 +1,4 @@
-# Scribble Battleships
+# Scribble ChatServer
 
 This is based on the [Purescript-Concur + Webpack starter pack](https://github.com/ajnsit/purescript-concur-webpack-starter)
 
@@ -8,23 +8,11 @@ This is based on the [Purescript-Concur + Webpack starter pack](https://github.c
 
 > git submodule update --init --recursive
 
-### Generate the Battleships protocol
-
-**This step is only required if you make changes to the protocol!**
-
-First build the Scribble tool
-
-> docker build -t scribble-java scribble-java
-
-Out protocol is described in `Game.scr`
-
-> docker run -v `pwd`:/repo --entrypoint "./scribblec.sh -d /repo/web/src/ /repo/Game.scr -api-ps BattleShips" scribble-java
-
 ## Server
 
 > stack build
 
-Start the Battleships game server
+Start the Chat server
 
 > stack exec server
 
