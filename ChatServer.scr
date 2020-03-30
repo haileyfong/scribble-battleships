@@ -1,0 +1,24 @@
+module ChatServer;
+
+type <purescript> "String" from "Prim" as String;
+
+explicit global protocol  ChatServer(role Client, role Server) {
+  Connect() connect Client to Server;
+  do Chat(Client, Server);
+  disconnect Client and Server;
+}
+
+global protocol Chat(role Client, role Server) {
+    choice at Client { 
+        Message(String) from Client to Server;
+        Messages(String) from Server to Client;
+        do Chat(Client, Server);
+    } or {
+        Recv() from Client to Server;
+        Messages(String) from Server to Client;
+        do Chat(Client, Server);
+    } or {
+        Quit() from Client to Server;
+    }
+}
+
