@@ -37,75 +37,8 @@ import Control.Applicative.Indexed (ipure)
 import Unsafe.Coerce (unsafeCoerce)
 
 
--- type UserLogin = String
--- type User =
---   { name :: String
---   , login :: UserLogin
---   }
-
--- userMap :: Map UserLogin User
--- userMap = fromFoldable
---   [ mkUser "admin" "Admin"
---   , mkUser "demo" "demo"
---   ]
---   where
---   mkUser ulogin name = Tuple ulogin {name : name, login: ulogin}
-
--- ------------------------------------------------------------
-
--- login :: Widget HTML User
--- login = loopState {msg: "", uname: ""} \s -> do
---   uname <- D.div'
---     [ D.div' [D.text "Try logging in as 'demo' or 'admin'"]
---     , D.div [P.style { color: "red"}] [D.text s.msg]
---     , D.div' [ textInputWithButton s.uname "Login" [P.placeholder "Enter Username"] [] ]
---     ]
---   -- The following could be an effectful ajax call, instead of a pure lookup
---   pure $ case M.lookup uname userMap of
---     Nothing -> Left (s {msg = "Login Failed for user '" <> uname <> "'"})
---     Just u -> Right u
-
--- logout :: User -> Widget HTML Unit
--- logout u = D.div'
---   [ D.text ("Logged in as " <> u.login <> " ")
---   , unit <$ D.button [P.onClick] [D.text "Logout"]
---   ]
-
--- -- PAGES ---------------------------------------------------
-
--- centerPage :: forall a. String -> Widget HTML a -> Widget HTML a
--- centerPage title contents = D.div'
---   [ D.h1' [D.text title]
---   , D.div'[ contents ]
---   ]
-
--- loggedInPage :: forall a. String -> User -> Widget HTML a -> Widget HTML (Maybe a)
--- loggedInPage title user contents = D.div'
---   [ D.h1' [D.text title]
---   , D.p' [D.text "CHATBOX"]
---   , D.div'[ Nothing <$ logout user ]
---   , D.div'[ Just <$> contents ]
---   ]
-
--- chatBox :: forall a. Widget HTML a
--- chatBox = do 
---   _ <- D.p' [D.text "AHHAHAH"]
---   chatBox
-------------------------------------------------------------
-
--- type St = User
--- type Task v a = StateT St (Widget v) a
 type ChatBoxState = String
 type CurrentState = String
-
--- currentUser :: forall v. Task v User
--- currentUser = get
-
--- runTask :: forall a. Task HTML a -> Widget HTML a
--- runTask task = do
---   u <- centerPage "Login" login
---   ma <- loggedInPage "Chat Server" u (evalStateT task u)
---   maybe (runTask task) pure ma
 
 chatWidget :: forall a. Widget HTML String
 chatWidget = do
@@ -239,15 +172,6 @@ sessionSendWidget port st = session
     bind = ibind
     pure = ipure
     discard = bind
-
-------------------------------------------------------------
-
--- chat :: forall a. Widget HTML a
--- chat = runTask do
---   u <- currentUser
---   D.div'
---     [ D.text "HELLO!"
---     ]
 
 main :: Effect Unit
 main = runWidgetInDom "root" $ (sessionReceiveWidget 9160 ""  <> sessionSendWidget 9160 "")
