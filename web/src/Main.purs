@@ -26,7 +26,7 @@ import Effect.Console (log)
 import Effect.Now (now)
 import Data.DateTime.Instant (unInstant)
 import Data.Time.Duration (negateDuration)
-import Scribble.Protocol.ChatServer as CS
+import Scribble.Protocol.ChatServer.ChatServer as CS
 import Scribble.FSM (Role(..))
 import Scribble.Session (Session, session, connect, send, receive, lift, whileWaiting, select, choice, disconnect)
 import Scribble.Transport.WebSocket (WebSocket, URL(..))
@@ -106,7 +106,7 @@ textInputEnter value hint reset = do
 receiveChatSession :: forall a. ChatBoxState -> Session (Widget HTML) WebSocket CS.S13 CS.S13 Unit
 receiveChatSession st = do
   select (SProxy :: SProxy "receive")
-  send (CS.RcvMessage)
+  send (CS.Recv)
   (CS.Messages messages) <- receive
   newSt <- updateStates messages st
   -- _ <- lift $ D.div' [D.text ("Silly Chatting"),true <$ textInputWithButton "" "Enter" [P.placeholder "Type Your Message"] [], D.p' [D.text newSt], false <$ liftAff (delay (Milliseconds 6.0))]
@@ -128,7 +128,7 @@ continueUntilSentSession st = do
 
 sendChatSession :: forall a. String -> Session (Widget HTML) WebSocket CS.S13 CS.S13 Unit
 sendChatSession msg = do
-  select (SProxy :: SProxy "send")
+  select (SProxy :: SProxy "message")
   sendMessage <- lift $ D.div' [ textInputWithButton "" "Enter" [P.placeholder "Type Your Message"] [] ]
   -- sendMessage <- lift $ chatFormWidget Nothing st
   send (CS.Message msg)
@@ -146,7 +146,7 @@ sessionReceiveWidget port st = session
   (Role :: Role CS.Client) $ do
   -- lift $ D.button [P.onClick] [D.text "Connect to Chat Server"]
   connect (Role :: Role CS.Server) (URL $ "ws://localhost:" <> show port)
-  send (CS.ConnectUser "admin")
+  send (CS.Connect)
   receiveChatSession st
   select (SProxy :: SProxy "quit")
   send CS.Quit
@@ -162,7 +162,8 @@ sessionSendWidget port st = session
   (Proxy :: Proxy WebSocket)
   (Role :: Role CS.Client) $ do
   connect (Role :: Role CS.Server) (URL $ "ws://localhost:" <> show port)
-  send (CS.ConnectUser "admin")
+  send (CS.Connect)
+  send (CS.Connect)
   sendChatSession st
   select (SProxy :: SProxy "quit")
   send CS.Quit
